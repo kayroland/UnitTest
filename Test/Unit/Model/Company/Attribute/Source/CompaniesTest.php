@@ -10,6 +10,7 @@ use Socoda\Company\Model\Company\Attribute\Source\Companies;
 class CompaniesTest extends \PHPUnit\Framework\TestCase
 {
     protected $companyCollectionFactoryMock;
+    protected $companyCollectionMock;
     protected $companies;
 
     protected function setUp()
@@ -30,29 +31,47 @@ class CompaniesTest extends \PHPUnit\Framework\TestCase
     public function testGetAllOptions()
     {
 
-        $companiesMock = $this->getMockBuilder(
-            \Socoda\Company\Model\Company\Attribute\Source\Companies::class
+
+
+        $companyCollectionMock = $this->getMockBuilder(
+            \Socoda\Company\Model\ResourceModel\Company\Collection::class
 
         )
             ->disableOriginalConstructor()
             ->getMock();
 
+        $items = [$this->createMock(\Socoda\Company\Model\Company::class),
+                  $this->createMock(\Socoda\Company\Model\Company::class)];
+
         $this->companyCollectionFactoryMock->expects($this->once())
             ->method('create')
-            ->will($this->returnValue($companiesMock));
+            ->will($this->returnValue($companyCollectionMock));
 
-        $companiesMock->expects($this->once())
+        $companyCollectionMock->expects($this->once())
             ->method('addAttributeToSelect')
             ->with('name')
-            ->willReturn($this->returnValue($companiesMock));
+            ->willReturnSelf();
 
-       $companiesMock->expects($this->once())
+        $companyCollectionMock->expects($this->once())
             ->method('setOrder')
-           ->with('name','asc')
-            ->will($this->returnValue($companiesMock));
+            ->with('name','asc')
+            ->willReturnSelf();
 
-        $result = $this->companies->getAllOptions();
-        $this->assertSame($companiesMock, $result);
+
+        $companyCollectionMock->expects($this->atLeastOnce())
+            ->method('getIterator')
+            ->willReturn(new \ArrayIterator($items));
+
+//        $companyCollectionMock->expects($this->once())
+//            ->method('getId');
+//
+//        $companyCollectionMock->expects($this->once())
+//            ->method('getName');
+
+       $this->companies->getAllOptions();
+//        $this->assertSame($companyCollectionMock, $result);
+
+
     }
 
 
