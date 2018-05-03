@@ -18,6 +18,9 @@ class EditTest extends \PHPUnit\Framework\TestCase
     protected $getRequestMock;
     protected $resultRedirectFactoryMock;
     protected $messageManagerMock;
+    protected $configMock;
+    protected $titleMock;
+    protected $companyPrependMock;
 
 
     protected function setUp()
@@ -111,6 +114,31 @@ class EditTest extends \PHPUnit\Framework\TestCase
         $this->registryMock->expects($this->once())
             ->method('register')
             ->with('current_company',$companyMock);
+
+        $this->configMock = $this->getMockBuilder(\Magento\Framework\View\Page\Config::class)
+            ->setMethods('getTitle')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->resultPageMock = expects($this->once())
+            ->method('getConfig')
+            ->willReturn($this->configMock);
+
+        $this->titleMock = $this->getMockBuilder(\Title::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->configMock = expects($this->once())
+            ->method('getTitle')
+            ->willReturn($this->titleMock);
+
+        $this->prependMock = $this->getMockBuilder(\Title::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->titleMock = expects($this->once())
+            ->method('prepend')
+            ->with(__('Edit %1', $this->companyPrependMock));
 
 
         $this->assertSame($this->resultPageMock, $this->editControllerMock->execute());
