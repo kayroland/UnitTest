@@ -120,7 +120,7 @@ class EditTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->resultPageMock = expects($this->once())
+        $this->resultPageMock->expects($this->once())
             ->method('getConfig')
             ->willReturn($this->configMock);
 
@@ -128,7 +128,7 @@ class EditTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->configMock = expects($this->once())
+        $this->configMock->expects($this->once())
             ->method('getTitle')
             ->willReturn($this->titleMock);
 
@@ -136,7 +136,7 @@ class EditTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->titleMock = expects($this->once())
+        $this->titleMock->expects($this->once())
             ->method('prepend')
             ->with(__('Edit %1', $this->companyPrependMock));
 
