@@ -68,7 +68,6 @@ class EditTest extends \PHPUnit\Framework\TestCase
                 $this->registryMock,
                 $this->companyRepositoryMock,
                 $this->companyFactoryMock])
-            ->setMethods(['getRequest'])
             ->getMock();
     }
 
