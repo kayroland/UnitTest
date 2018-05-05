@@ -57,19 +57,11 @@ class CompaniesTest extends \PHPUnit\Framework\TestCase
             ->with('name','asc')
             ->willReturnSelf();
 
-
         $companyCollectionMock->expects($this->atLeastOnce())
             ->method('getIterator')
             ->willReturn(new \ArrayIterator($items));
 
-//        $companyCollectionMock->expects($this->once())
-//            ->method('getId');
-//
-//        $companyCollectionMock->expects($this->once())
-//            ->method('getName');
-
-       $this->companies->getAllOptions();
-//        $this->assertSame($companyCollectionMock, $result);
+        $this->companies->getAllOptions();
 
 
     }
