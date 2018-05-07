@@ -1,8 +1,5 @@
 <?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
+
 namespace Socoda\Company\Test\Unit\Model;
 
 
@@ -25,6 +22,7 @@ class CompanyRepositoryTest extends \PHPUnit\Framework\TestCase
             ->getMock();
 
         $this->companyFactoryMock = $this->getMockBuilder(\Socoda\Company\Model\CompanyFactory::class)
+            ->setMethods(['create'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -43,28 +41,134 @@ class CompanyRepositoryTest extends \PHPUnit\Framework\TestCase
 
         $this->resourceModelMock->expects($this->once())
             ->method('save')
-            ->with($this->companyMock)
-            ->willReturnSelf();
+            ->with($this->companyMock);
 
-        $this->assertSame($this->companyMock, $this->companyRepositoryMock->save($this->companyMock));
+        $this->companyRepositoryMock->save($this->companyMock);
     }
 
+    /**
+     * @expectedException \Magento\Framework\Exception\CouldNotSaveException
+     * * @expectedExceptionMessage Could not save company:
+     */
     public function testSaveWithException()
     {
-//        $ex = 'fdf';
-//        $errorMsg = new \Exception($ex);
-//        $phrase = new \Magento\Framework\Phrase('Not save');
-//        $e = new \Magento\Framework\Exception\CouldNotSaveException($phrase,$errorMsg);
-        $errorMsg = 'fdfd';
-
 
         $this->resourceModelMock->expects($this->once())
             ->method('save')
             ->with($this->companyMock)
-            ->willThrowException(new \Exception(__($errorMsg)));
+            ->will($this->throwException(new \Exception()));
 
-       $this->companyRepositoryMock->save($this->companyMock);
+        $this->companyRepositoryMock->save($this->companyMock);
     }
+
+    /**
+     * @expectedException \Magento\Framework\Exception\NoSuchEntityException
+     * @expectedExceptionMessage No such entity with id = 1
+     */
+    public function testGet()
+    {
+        $storeId = 10;
+        $comId = 1;
+
+        $this->companyMock = $this->getMockBuilder(\Socoda\Company\Model\Company::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->companyFactoryMock->expects($this->once())
+            ->method('create')
+            ->willReturn($this->companyMock);
+
+        $this->companyMock->expects($this->once())
+            ->method('load')
+            ->with($comId)
+            ->willReturnSelf();
+
+        $this->companyMock = $this->getMockBuilder(\Socoda\Company\Model\Company::class)
+            ->setMethods(['getId'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->companyMock->expects($this->never())
+            ->method('getId')
+            ->willReturn($comId);
+
+        $this->assertEquals($this->companyMock, $this->companyRepositoryMock->get($comId,$storeId));
+
+
+    }
+
+    public function testDelete()
+    {
+        $companyId = 1;
+
+        $this->companyMock = $this->getMockBuilder(\Socoda\Company\Model\Company::class)
+            ->setMethods(['getId'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->companyMock->expects($this->once())
+            ->method('getId')
+            ->willReturn($companyId);
+
+        $this->resourceModelMock->expects($this->once())
+            ->method('delete')
+            ->with($this->companyMock);
+
+        $this->assertTrue($this->companyRepositoryMock->delete($this->companyMock));
+
+    }
+
+    /**
+     * @expectedException \Magento\Framework\Exception\StateException
+     * @expectedExceptionMessage Cannot delete company with id
+     */
+    public function testDeleteWithException()
+    {
+        $companyId = 1;
+
+        $this->companyMock = $this->getMockBuilder(\Socoda\Company\Model\Company::class)
+            ->setMethods(['getId'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->companyMock->expects($this->any())
+            ->method('getId')
+            ->willReturn($companyId);
+
+        $this->resourceModelMock->expects($this->once())
+            ->method('delete')
+            ->with($this->companyMock)
+            ->willThrowException(new \Exception());
+
+        $this->assertTrue($this->companyRepositoryMock->delete($this->companyMock));
+
+    }
+
+//    public function testDeleteById()
+//    {
+//        $comId = 10;
+//
+//        $this->resourceModelMock = $this->getMockBuilder(\Socoda\Company\Model\ResourceModel\Company::class)
+//            ->setMethods(['get'])
+//            ->disableOriginalConstructor()
+//            ->getMock();
+//
+//        $this->resourceModelMock->expects($this->once())
+//            ->method('get')
+//            ->with(10)
+//            ->willReturn(10);
+//
+//        $this->companyMock->expects($this->once())
+//            ->method('load')
+//            ->willReturnSelf();
+//
+//        $this->companyRepositoryMock->deleteById(10);
+//
+////        $this->assertSame($this->resourceModelMock, $result);
+//
+//
+//    }
+
 
 
 }
